@@ -1,4 +1,6 @@
-const express = require('express')
+// const express = require('express')
+import express from 'express'
+import type { Request, Response } from 'express'
 const app = express()
 
 app.use(express.json())
@@ -6,7 +8,7 @@ app.use(express.json())
 // API - Restfull - rest
 
 /**
- * O Sergio me dê uma listagem de usuarios
+ * O Sergio, me dê uma listagem de usuarios
  * 
  * GET - Pegar informacao
  * POST - Entregar informacao
@@ -19,9 +21,19 @@ app.use(express.json())
  * DELETE /users/3 = Remover usuario
  * 
  * CRUD = Create Read Update Delete
+ * 
+ * Status Code
 */
 
-let users = [
+interface User {
+  id: number
+  name: string
+  age?: number
+}
+
+// users é uma lista de objetos que contém id e name onde
+// id é do tipo número e name é do tipo texto
+let users: Array<User> = [
   {
     id: 1,
     name: 'Vitor'
@@ -44,28 +56,28 @@ let users = [
   }
 ]
 
-app.get('/users', (req, res) => {
+app.get('/users', (req: Request, res: Response) => {
   res.json({
     message: 'Esta rota irá retornar uma lista de usuários',
     data: users
   })
 })
 
-app.post('/users', (req, res) => {
-  users.push(req.body)
+app.post('/users', (req: Request, res: Response) => {
+  users.push(req.body as User)
   // users = [...users, req.body]
 
-  res.json({
+  res.status(201).json({
     message: 'Esta rota irá receber um usuário'
   })
 })
 
-app.put('/users/:id', (req, res) => {
+app.put('/users/:id', (req: Request, res: Response) => {
   users = users.map(user => {
-    if(user.id == req.params.id) {
+    if(user.id === parseInt(req.params.id as string, 10)) {
       return {
         ...user,
-        ...req.body
+        ...req.body as Partial<User>
       }
     }
 
@@ -76,8 +88,8 @@ app.put('/users/:id', (req, res) => {
   })
 })
 
-app.delete('/users/:id', (req, res) => {
-  users = users.filter(user => user.id != req.params.id)
+app.delete('/users/:id', (req: Request, res: Response) => {
+  users = users.filter(user => user.id != Number (req.params.id))
   res.json({
     message: 'Esta rota irá remover um usuário'
   })
