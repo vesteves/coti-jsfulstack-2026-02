@@ -1,9 +1,7 @@
-// const express = require('express')
-import express from 'express'
+import { Router } from 'express'
 import type { Request, Response } from 'express'
-const app = express()
 
-app.use(express.json())
+export const router = Router()
 
 // API - Restfull - rest
 
@@ -56,14 +54,14 @@ let users: Array<User> = [
   }
 ]
 
-app.get('/users', (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   res.json({
     message: 'Esta rota irá retornar uma lista de usuários',
     data: users
   })
 })
 
-app.post('/users', (req: Request, res: Response) => {
+router.post('/', (req: Request, res: Response) => {
   users.push(req.body as User)
   // users = [...users, req.body]
 
@@ -72,7 +70,7 @@ app.post('/users', (req: Request, res: Response) => {
   })
 })
 
-app.put('/users/:id', (req: Request, res: Response) => {
+router.put('/:id', (req: Request, res: Response) => {
   users = users.map(user => {
     if(user.id === parseInt(req.params.id as string, 10)) {
       return {
@@ -88,13 +86,11 @@ app.put('/users/:id', (req: Request, res: Response) => {
   })
 })
 
-app.delete('/users/:id', (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   users = users.filter(user => user.id != Number (req.params.id))
   res.json({
     message: 'Esta rota irá remover um usuário'
   })
 })
 
-app.listen(8000, () => {
-  console.log('Servidor ON!')
-})
+export default router

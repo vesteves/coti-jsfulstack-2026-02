@@ -1,13 +1,14 @@
 {
-  "name": "javascript",
+  "name": "Parnaioca API",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "typecheck": "tsc --noEmit",
-    "dev": "npm run typecheck && nodemon index.ts"
+    "dev": "npm run typecheck && nodemon src/index.ts",
+    "build": "tsc",
+    "prod": "npm run build && node dist/index.js"
   },
   "author": "Vitor Esteves",
   "license": "ISC",
