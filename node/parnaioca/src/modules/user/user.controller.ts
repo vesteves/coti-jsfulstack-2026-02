@@ -24,37 +24,95 @@ export const router = Router()
  * Status Code
 */
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   res.json({
-    message: 'Esta rota irá retornar uma lista de usuários',
-    data: userRepository.getAll()
+    message: 'Usuários listados com sucesso',
+    data: await userRepository.getAll()
   })
 })
 
-router.post('/', (req: Request, res: Response) => {
-  userRepository.create(req.body)
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string
+
+    const response = await userRepository.getOneById(id)
+
+    if(response === null) {
+      res.status(404).json({
+        message: `Usuário ${id} não encontrado`
+      })
+      return
+    }
+
+    res.json({
+      message: 'Usuário encontrado',
+      data: response 
+    })
+  } catch (error: any) {
+    res.status(422).json({
+      message: 'Falha ao listar usuário',
+      log: error.message
+    })
+  }
+})
+
+router.post('/', async (req: Request, res: Response) => {
+  await userRepository.create(req.body)
 
   res.status(201).json({
     message: 'Esta rota irá receber um usuário'
   })
 })
 
-router.put('/:id', (req: Request, res: Response) => {
-  const idNumber = parseInt(req.params.id as string, 10)
-  userRepository.update(idNumber, req.body)
+router.put('/:id', async (req: Request, res: Response) => {
+  const id = req.params.id as string
 
-  res.json({
-    message: 'Esta rota irá atualizar um usuário'
-  })
+  try {
+    const response = await userRepository.update(id, req.body)
+    // caso não encontre o usuário na base de dados
+
+    if(response === null) {
+      res.status(404).json({
+        message: `Usuário ${id} não encontrado`
+      })
+      return
+    }
+
+    // caso encontre o usuário e consiga atualizar as informações
+    res.json({
+      message: `Usuário ${response._id} atualizado com sucesso`
+    })
+  } catch (error: any) {
+    // caso tenha dado algum problema na atualização de usuário no mongodb
+    res.status(422).json({
+      message: 'Falha ao atualizar usuário',
+      log: error.message
+    })
+  }
 })
 
-router.delete('/:id', (req: Request, res: Response) => {
-  const idNumber = Number (req.params.id)
-  userRepository.destroy(idNumber)
+router.delete('/:id', async (req: Request, res: Response) => {
+    const id = req.params.id as string
 
-  res.json({
-    message: 'Esta rota irá remover um usuário'
-  })
+  try {
+    const response = await userRepository.destroy(id)
+
+    if(response === null) {
+      res.status(404).json({
+        message: `Usuário ${id} não encontrado`
+      })
+      return
+    }
+
+    res.json({
+      message: `Usuário ${response._id} removido com sucesso`
+    })
+  } catch (error: any) {
+    res.status(422).json({
+      message: 'Falha ao remover usuário',
+      log: error.message
+    })
+  }
 })
 
 export default router

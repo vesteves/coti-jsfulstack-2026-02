@@ -1,60 +1,45 @@
 // arquivo que vai conter a comunicacao com o banco de dados
 // relacionado a usuarios
+import { userModel } from './user.model'
 
 import type { User } from './user.type'
 
-// users é uma lista de objetos que contém id e name onde
-// id é do tipo número e name é do tipo texto
-
-let users: Array<User> = [
-  {
-    id: 1,
-    name: 'Vitor'
-  },
-  {
-    id: 2,
-    name: 'Kaio'
-  },
-  {
-    id: 3,
-    name: 'Sérgio'
-  },
-  {
-    id: 4,
-    name: 'Snaymi'
-  },
-  {
-    id: 5,
-    name: 'Leandro'
+const getOneById = async (_id: string) => {
+  try {
+    return await userModel.findById(_id)
+  } catch (error: any) {
+    // posso mandar este erro para uma ferramenta de observabilidade
+    // sentry || datadog || papertrail
+    throw error
   }
-]
-
-const getAll = () => {
-  return users
 }
 
-const create = (param: User) => {
-  users.push(param)
+const getAll = async () => {
+  return await userModel.find()
 }
 
-const update = (id: number, param: Partial<User>) => {
-  users = users.map(user => {
-    if(user.id === id) {
-      return {
-        ...user,
-        ...param
-      }
-    }
-
-    return user
-  })
+const create = async (param: User) => {
+  return await userModel.create(param)
 }
 
-const destroy = (id: number) => {
-  users = users.filter(user => user.id != id)
+const update = async (_id: string, param: Partial<User>) => {
+  try {
+    return await userModel.findByIdAndUpdate(_id, param)
+  } catch(error: any) {
+    throw error
+  }
+}
+
+const destroy = async (_id: string) => {
+  try {
+    return await userModel.findByIdAndDelete(_id)
+  } catch(error: any) {
+    throw error
+  }
 }
 
 export default {
+  getOneById,
   getAll,
   create,
   update,
