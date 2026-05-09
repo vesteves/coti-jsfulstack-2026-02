@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
 import userRepository from './user.repository'
+import jwt from 'jsonwebtoken'
 
 export const router = Router()
 
@@ -57,10 +58,37 @@ router.get('/:id', async (req: Request, res: Response) => {
 })
 
 router.post('/', async (req: Request, res: Response) => {
+  if (!req.headers.authorization) {
+    res.status(403).json({
+      message: 'Usuário não autorizado'
+    })
+    return
+  }
+
+  const token = req.headers.authorization
+
+  try {
+    const userId = jwt.verify(token, process.env.JWT_SECRET || '')
+
+    const user = await userRepository.getOneById(userId as string)
+
+    if (!user) {
+      res.status(403).json({
+        message: 'Usuário não autorizado'
+      })
+      return
+    }
+  } catch (error: any) {
+    res.status(403).json({
+      message: 'Usuário não autorizado',
+      log: error.message
+    })
+  }
+  // validar se o e-mail é uma string
   await userRepository.create(req.body)
 
   res.status(201).json({
-    message: 'Esta rota irá receber um usuário'
+    message: 'Usuário salvo com sucesso'
   })
 })
 

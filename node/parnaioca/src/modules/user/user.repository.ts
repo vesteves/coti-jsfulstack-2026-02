@@ -19,7 +19,11 @@ const getAll = async () => {
 }
 
 const create = async (param: User) => {
-  return await userModel.create(param)
+  try {
+    await userModel.create(param)
+  } catch(error: any) {
+    throw error
+  }
 }
 
 const update = async (_id: string, param: Partial<User>) => {
