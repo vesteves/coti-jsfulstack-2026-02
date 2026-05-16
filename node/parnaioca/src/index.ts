@@ -4,6 +4,7 @@ import userRouter from './modules/user/user.controller'
 import authRouter from './modules/auth/auth.controller'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+// import authMiddleware from './middleware/authMiddleware'
 dotenv.config()
 
 const app = express()
@@ -11,6 +12,7 @@ const app = express()
 app.use(express.json())
 
 // regras de negócio de usuários
+// app.use('/users', authMiddleware, userRouter)
 app.use('/users', userRouter)
 app.use('/auth', authRouter)
 

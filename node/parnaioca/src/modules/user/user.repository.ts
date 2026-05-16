@@ -14,6 +14,14 @@ const getOneById = async (_id: string) => {
   }
 }
 
+const getOneByEmail = async (email: string) => {
+  try {
+    return await userModel.findOne({ email })
+  } catch (error: any) {
+    throw error
+  }
+}
+
 const getAll = async () => {
   return await userModel.find()
 }
@@ -44,6 +52,7 @@ const destroy = async (_id: string) => {
 
 export default {
   getOneById,
+  getOneByEmail,
   getAll,
   create,
   update,

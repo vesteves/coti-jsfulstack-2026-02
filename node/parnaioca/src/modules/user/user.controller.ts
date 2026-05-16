@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
 import userRepository from './user.repository'
-import jwt from 'jsonwebtoken'
+import authMiddleware from '../../middleware/authMiddleware'
+import bcrypt from 'bcrypt'
 
 export const router = Router()
 
@@ -57,33 +58,25 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
-router.post('/', async (req: Request, res: Response) => {
-  if (!req.headers.authorization) {
-    res.status(403).json({
-      message: 'Usuário não autorizado'
+router.post('/', authMiddleware, async (req: Request, res: Response) => {
+  if (!req.body.password) {
+    res.status(400).json({
+      message: 'O campo senha é obrigatório',
     })
     return
   }
 
-  const token = req.headers.authorization
-
-  try {
-    const userId = jwt.verify(token, process.env.JWT_SECRET || '')
-
-    const user = await userRepository.getOneById(userId as string)
-
-    if (!user) {
-      res.status(403).json({
-        message: 'Usuário não autorizado'
-      })
-      return
-    }
-  } catch (error: any) {
-    res.status(403).json({
-      message: 'Usuário não autorizado',
-      log: error.message
+  if (!req.body.email) {
+    res.status(400).json({
+      message: 'O campo email é obrigatório',
     })
+    return
   }
+
+  const passwordBody = req.body.password
+  const password = bcrypt.hashSync(passwordBody, 10)
+  req.body.password = password
+
   // validar se o e-mail é uma string
   await userRepository.create(req.body)
 
@@ -92,7 +85,7 @@ router.post('/', async (req: Request, res: Response) => {
   })
 })
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
   const id = req.params.id as string
 
   try {
@@ -119,8 +112,8 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 })
 
-router.delete('/:id', async (req: Request, res: Response) => {
-    const id = req.params.id as string
+router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
+  const id = req.params.id as string
 
   try {
     const response = await userRepository.destroy(id)

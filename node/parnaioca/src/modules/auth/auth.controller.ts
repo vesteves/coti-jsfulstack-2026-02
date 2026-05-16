@@ -2,6 +2,7 @@ import { Router } from 'express'
 import type { Request, Response } from 'express'
 import userRepository from '../user/user.repository'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
 const router = Router()
 
@@ -18,12 +19,20 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 
   // eu SEI que tenho email e uma senha no query parameter
-  const users = await userRepository.getAll()
-  const user = users.find((userRow) => userRow.email === req.body.email && userRow.password === req.body.password)
+  const user = await userRepository.getOneByEmail(req.body.email)
 
   if (!user) {
     res.status(401).json({
-      message: 'Usuário não tem permissão para efetuar esta requisição',
+      message: 'Falha ao autenticar usuário',
+    })
+    return
+  }
+
+  const passwordPassed = bcrypt.compareSync(req.body.password, user.password)
+
+  if(!passwordPassed) {
+    res.status(401).json({
+      message: 'Falha ao autenticar usuário',
     })
     return
   }
