@@ -3,6 +3,8 @@ import type { Request, Response } from 'express'
 import userRepository from './user.repository'
 import authMiddleware from '../../middleware/authMiddleware'
 import bcrypt from 'bcrypt'
+import { createUserSchema, updateUserSchema } from './user.schema'
+import { validationMiddleware } from '../../middleware/validationMiddleware'
 
 export const router = Router()
 
@@ -58,38 +60,24 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
-router.post('/', authMiddleware, async (req: Request, res: Response) => {
-  if (!req.body.password) {
-    res.status(400).json({
-      message: 'O campo senha é obrigatório',
-    })
-    return
-  }
-
-  if (!req.body.email) {
-    res.status(400).json({
-      message: 'O campo email é obrigatório',
-    })
-    return
-  }
-
-  const passwordBody = req.body.password
+router.post('/', authMiddleware, validationMiddleware(createUserSchema), async (_req: Request, res: Response) => {
+  const passwordBody = res.locals.validation.password
   const password = bcrypt.hashSync(passwordBody, 10)
-  req.body.password = password
+  res.locals.validation.password = password
 
   // validar se o e-mail é uma string
-  await userRepository.create(req.body)
+  await userRepository.create(res.locals.validation)
 
   res.status(201).json({
     message: 'Usuário salvo com sucesso'
   })
 })
 
-router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
+router.put('/:id', authMiddleware, validationMiddleware(updateUserSchema), async (req: Request, res: Response) => {
   const id = req.params.id as string
 
   try {
-    const response = await userRepository.update(id, req.body)
+    const response = await userRepository.update(id, res.locals.validation)
     // caso não encontre o usuário na base de dados
 
     if(response === null) {
