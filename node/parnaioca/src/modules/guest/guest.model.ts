@@ -1,11 +1,11 @@
 import mongoose, { Types } from 'mongoose'
 
-const userSchema = new mongoose.Schema({
+const guestSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true
   },
-  password: {
+  phone: {
     type: String,
     required: true
   },
@@ -16,9 +16,6 @@ const userSchema = new mongoose.Schema({
   deletedAt: {
     type: Date,
   },
-  lastLogin: {
-    type: Date,
-  }
 })
 
-export const userModel = mongoose.model('users', userSchema)
+export const guestModel = mongoose.model('guests', guestSchema)
