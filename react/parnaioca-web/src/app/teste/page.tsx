@@ -10,6 +10,7 @@ export default function TestePage() {
       <Total frase="8 hóspedes cadastrados" />
       <Total frase="6 quartos cadastrados" />
       <LoginForm />
+
     </div>
   );
 }

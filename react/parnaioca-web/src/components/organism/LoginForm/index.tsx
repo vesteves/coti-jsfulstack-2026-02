@@ -61,7 +61,11 @@ export default function LoginForm() {
         helperText={form.password ? '' : 'É necessário prencher a senha'}
       />
 
-      <Button text="Entrar" type="button" onClick={handleClick} />
+      <Button 
+        text="Entrar"
+        type="button"
+        onClick={handleClick}
+        status={!!(form.password && form.email)} />
     </form>
   );
 }
