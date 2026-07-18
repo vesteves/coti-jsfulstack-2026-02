@@ -21,7 +21,7 @@ export default function FormItem({
   helperText,
 }: FormItemProps) {
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <Label text={label} />
       <Input
         type={type}

@@ -3,10 +3,17 @@
 import Button from '@/components/atom/Button';
 import FormItem from '@/components/molecule/FormItem';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface FormProps {
   email: string;
   password: string;
+}
+
+interface ResponseProps {
+  success: boolean;
+  token?: string;
+  message: string;
 }
 
 export default function LoginForm() {
@@ -14,6 +21,8 @@ export default function LoginForm() {
     email: '',
     password: '',
   });
+
+  const router = useRouter();
 
   // Responsável em coletar os dados do formulário e enviar os dados para algum lugar
   // RESTfull API
@@ -27,9 +36,23 @@ export default function LoginForm() {
       },
     })
       .then((response) => response.json())
-      .then((response: any) => {
-        alert(response.message);
-        // redirecionar para a dashboard
+      .then((response: ResponseProps) => {
+        console.log('response', response);
+
+        if (response.success) {
+          // redirecionar para a dashboard
+          // response.token
+
+          if (!response.token) {
+            alert('Houve uma falha no servidor');
+            return;
+          }
+
+          localStorage.setItem('token', response.token);
+          router.push('/dashboard');
+        } else {
+          alert(response.message);
+        }
       });
   };
 
@@ -37,12 +60,12 @@ export default function LoginForm() {
   const handleInput = (e: any, name: string = '') => {
     setForm({
       ...form,
-      [name]: e.target.value,
+      [name]: (e.target as HTMLInputElement).value,
     });
   };
 
   return (
-    <form>
+    <form className="flex flex-col gap-4 w-full max-w-md mx-auto mt-10">
       <FormItem
         label="E-mail"
         type="text"
@@ -61,11 +84,12 @@ export default function LoginForm() {
         helperText={form.password ? '' : 'É necessário prencher a senha'}
       />
 
-      <Button 
+      <Button
         text="Entrar"
         type="button"
         onClick={handleClick}
-        status={!!(form.password && form.email)} />
+        status={!!(form.password && form.email)}
+      />
     </form>
   );
 }
