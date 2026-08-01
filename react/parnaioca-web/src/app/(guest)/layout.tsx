@@ -3,13 +3,17 @@
 import useAuth from '@/hooks/useAuth';
 import { useEffect } from 'react';
 
-export default function DashboardPage() {
-  const { canAccess } = useAuth();
+export default function GuestLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { canNotAccess } = useAuth();
 
   useEffect(() => {
-    canAccess();
+    canNotAccess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div>Dashboard</div>;
+  return <div>{children}</div>;
 }
