@@ -22,9 +22,18 @@ app.use('/guests', authMiddleware, guestRouter)
 app.use('/bedrooms', authMiddleware, bedroomRouter)
 app.use('/reservations', authMiddleware, reservationRouter)
 
-app.listen(8000, () => {
-  console.log('Servidor ON!')
+async function start() {
+  try {
+    await mongoose.connect(process.env.DB_STRING || '')
+    console.log('MongoDB connected')
+  } catch (error) {
+    console.error('MongoDB connection failed', error)
+    process.exit(1)
+  }
 
-  // ORM
-  mongoose.connect(process.env.DB_STRING || '')
-})
+  app.listen(8000, () => {
+    console.log('Servidor ON!')
+  })
+}
+
+start()
