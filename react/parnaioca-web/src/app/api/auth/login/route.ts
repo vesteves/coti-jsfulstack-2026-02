@@ -5,10 +5,21 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   const data = await request.json()
 
-  if (data.email === 'teste@teste.com') {
+  const response = await fetch('https://coti-jsfulstack-2026-02-3zw8.vercel.app/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  })
+
+  const responseData = await response.json()
+
+  if (responseData.token) {
     return NextResponse.json({
       success: true,
-      token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30',
+      token: responseData.token,
       message: 'Usuário autenticado com sucesso'
     });
   }

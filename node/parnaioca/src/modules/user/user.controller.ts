@@ -41,7 +41,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
     const response = await userRepository.getOneById(id)
 
-    if(response === null) {
+    if (response === null) {
       res.status(404).json({
         message: `Usuário ${id} não encontrado`
       })
@@ -50,7 +50,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
     res.json({
       message: 'Usuário encontrado',
-      data: response 
+      data: response
     })
   } catch (error: any) {
     res.status(422).json({
@@ -60,7 +60,7 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
-router.post('/', authMiddleware, validationMiddleware(createUserSchema), async (_req: Request, res: Response) => {
+router.post('/', validationMiddleware(createUserSchema), async (_req: Request, res: Response) => {
   const passwordBody = res.locals.validation.password
   const password = bcrypt.hashSync(passwordBody, 10)
   res.locals.validation.password = password
@@ -80,7 +80,7 @@ router.put('/:id', authMiddleware, validationMiddleware(updateUserSchema), async
     const response = await userRepository.update(id, res.locals.validation)
     // caso não encontre o usuário na base de dados
 
-    if(response === null) {
+    if (response === null) {
       res.status(404).json({
         message: `Usuário ${id} não encontrado`
       })
@@ -106,7 +106,7 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
   try {
     const response = await userRepository.destroy(id)
 
-    if(response === null) {
+    if (response === null) {
       res.status(404).json({
         message: `Usuário ${id} não encontrado`
       })
