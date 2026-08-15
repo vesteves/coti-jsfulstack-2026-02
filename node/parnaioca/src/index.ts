@@ -7,13 +7,14 @@ import bedroomRouter from './modules/bedroom/bedroom.controller'
 import reservationRouter from './modules/reservation/reservation.controller'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import authMiddleware from './middleware/authMiddleware'
 dotenv.config()
 
 const app = express()
 
 app.use(express.json())
-
+app.use(cors())
 // regras de negócio de usuários
 // app.use('/users', authMiddleware, userRouter)
 app.use('/users', userRouter)
